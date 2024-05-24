@@ -21,9 +21,16 @@ export class ProductsController {
     return this.productsService.findAll(paginationDto);
   }
  
-  @MessagePattern({cmd:'find_one_product'})
-  findOne(
-    @Payload('id', ParseIntPipe) id: number) {
+  // @MessagePattern({cmd:'find_one_product'})
+  // findOne(
+  //   @Payload('id', ParseIntPipe) id: number) {
+  //   return this.productsService.findOne(id);
+  // }
+
+  // @Get(':id')
+  @MessagePattern({ cmd: 'find_one_product' })
+  findOne(@Payload('id', ParseIntPipe) id: number) {
+    // { id: 1
     return this.productsService.findOne(id);
   }
 
