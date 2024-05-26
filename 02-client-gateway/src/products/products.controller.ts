@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpStatus,
   Inject,
   Param,
   ParseIntPipe,
@@ -35,22 +36,29 @@ export class ProductsController {
     );
   }
 
-  // return this.productsClient.send({ cmd: 'find_one_product' }, { id }).pipe(
-  //   catchError((err) => {
-  //     throw new RpcException(err);
-  //   }),
-  // );
 
   @Get(':id')
   async findOne(@Param('id') id: string) {
-    try {
-      const product = await firstValueFrom(
-        this.productsClient.send({ cmd: 'find_one_product' }, { id }),
-      );
-      return product;
-    } catch (error) {
-      throw new RpcException(error);
-    }
+
+  return this.productsClient.send({ cmd: 'find_one_product' }, { id }).pipe(
+    catchError((err) => {
+      throw new RpcException(err);
+    }),
+  );
+
+
+    // try {
+    //   const product = await firstValueFrom(
+    //     this.productsClient.send({ cmd: 'find_one_product' }, { id }),
+    //   );
+    //   return product;
+    // } catch (error) {
+    //   throw new RpcException({
+    //     status: HttpStatus.BAD_REQUEST, 
+    //     message: `Product with ID #${id} not found`
+    //   });
+    // }
+  
   }
 
   @Delete(':id')
