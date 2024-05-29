@@ -7,16 +7,22 @@ import { PrismaClient } from '@prisma/client';
 export class OrdersService  extends PrismaClient implements OnModuleInit {
 
   private readonly logger = new Logger('OrdersService');
-
+ 
   async onModuleInit() {
     await this.$connect();
     this.logger.log('Database connected');
   }
+ 
+  async create(createOrderDto: CreateOrderDto) {
+     
+    const order = await this.order.create({
+      data: { 
+        ...createOrderDto
+      },
+    });
 
-  
-  create(createOrderDto: CreateOrderDto) {
-    return createOrderDto;
-    // return 'This action adds a new order';
+    return order;
+ 
   }
 
   findAll() {
