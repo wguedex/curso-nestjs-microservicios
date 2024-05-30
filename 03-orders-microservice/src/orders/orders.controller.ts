@@ -15,9 +15,10 @@ export class OrdersController {
   }
 
   @MessagePattern('findAllOrders')
-  findAll(@Payload() OrderPaginationDTO: OrderPaginationDTO) {
-    return this.ordersService.findAll();
+  findAll(@Payload() orderPaginationDTO: OrderPaginationDTO) {
+    return this.ordersService.findAll(orderPaginationDTO);
   }
+ 
 
   @MessagePattern('findOneOrder')
   findOne(@Payload('id', ParseUUIDPipe ) id: string) {
