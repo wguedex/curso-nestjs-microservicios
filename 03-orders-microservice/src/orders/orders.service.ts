@@ -39,8 +39,8 @@ export class OrdersService  extends PrismaClient implements OnModuleInit {
 
     return {
       data: await this.order.findMany({
-        skip: (currentPage - 1) * perPage,
-        take: perPage,
+        // skip: (currentPage - 1) * perPage,
+        // take: perPage,
         where: {
           status: orderPaginationDto.status,
         },
