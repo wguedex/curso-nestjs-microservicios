@@ -1,4 +1,14 @@
-import { Controller, Get, Post, Body, Param, Inject, ParseUUIDPipe, Query } from '@nestjs/common';  
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Inject,
+  ParseUUIDPipe,
+  Query,
+  Patch,
+} from '@nestjs/common';
 import { ORDER_SERVICE } from 'src/config';
 import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { PaginationDto } from 'src/common';
@@ -12,18 +22,17 @@ export class OrdersController {
   ) {}
 
   @Post()
-  create(@Body() createOrderDto: CreateOrderDto) { 
+  create(@Body() createOrderDto: CreateOrderDto) {
     return this.orderClient.send('createOrder', createOrderDto);
   }
- 
+
   @Get()
-  async findAll( @Query() orderPaginationDto: OrderPaginationDTO ) {
+  async findAll(@Query() orderPaginationDto: OrderPaginationDTO) {
     try {
       const orders = await firstValueFrom(
-        this.orderClient.send('findAllOrders', orderPaginationDto)
-      )
+        this.orderClient.send('findAllOrders', orderPaginationDto),
+      );
       return orders;
-
     } catch (error) {
       throw new RpcException(error);
     }
@@ -33,7 +42,7 @@ export class OrdersController {
   async findOne(@Param('id', ParseUUIDPipe) id: string) {
     try {
       const order = await firstValueFrom(
-        this.orderClient.send('findOneOrder', { id })
+        this.orderClient.send('findOneOrder', { id }),
       );
 
       return order;
@@ -42,32 +51,30 @@ export class OrdersController {
     }
   }
 
-
   @Get(':status')
-  async findAllByStatus(
-    @Param() status: StatusDTO,
-  ) {
+  async findAllByStatus(@Param() status: StatusDTO) {
     try {
-
       return this.orderClient.send('findAllOrders', {
         ...PaginationDto,
         status: status.status,
       });
-      
-
     } catch (error) {
       throw new RpcException(error);
     }
   }
 
-  // @Get(':Status')
-  // async findAllByStatus( @Param('status') status: string ){
-  //   try {
-  //     console.log(status)
-  //     return status;
-  //   }catch(error){
-  //     throw new RpcException(error);
-  //   }
-  // }
-
+  @Patch(':id')
+  async changeStatus(
+    @Param('id', ParseUUIDPipe) id: String,
+    @Body() statusDTO: StatusDTO,
+  ) {
+    try {
+      return this.orderClient.send('changeOrderStatus', {
+        id,
+        status: statusDTO.status,
+      });
+    } catch (error) {
+      throw new RpcException(error)
+    }
+  }
 }
