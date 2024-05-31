@@ -17,14 +17,20 @@ export class OrdersService  extends PrismaClient implements OnModuleInit {
   }
  
   async create(createOrderDto: CreateOrderDto) {
-     
-    const order = await this.order.create({
-      data: { 
-        ...createOrderDto
-      },
-    });
+  
+    
+    return {
+      service : 'Orders Microservice', 
+      createOrderDto: createOrderDto
+    }
 
-    return order;
+    // const order = await this.order.create({
+    //   data: { 
+    //     ...createOrderDto
+    //   },
+    // });
+
+    // return order;
  
   }
  
