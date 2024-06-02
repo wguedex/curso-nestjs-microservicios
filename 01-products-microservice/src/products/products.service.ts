@@ -91,6 +91,8 @@ export class ProductsService  extends PrismaClient implements OnModuleInit {
   }
 
   async validateProduct(ids: number[]){
+    
+    console.log(ids);
 
     // arreglo de ids sin duplicados
     ids = Array.from(new Set(ids))

@@ -8,30 +8,29 @@ import {
   ParseUUIDPipe,
   Query,
   Patch,
-} from '@nestjs/common';
-// import { ORDER_SERVICE } from 'src/config';
+} from '@nestjs/common'; 
 import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { PaginationDto } from 'src/common';
-import { catchError, firstValueFrom } from 'rxjs';
+import { firstValueFrom } from 'rxjs';
 import { CreateOrderDto, OrderPaginationDTO, StatusDTO } from './dto';
 import { NATS_SERVICE } from 'src/config/services';
 
 @Controller('orders')
 export class OrdersController {
   constructor(
-    @Inject(NATS_SERVICE) private readonly orderClient: ClientProxy,
+    @Inject(NATS_SERVICE) private readonly client: ClientProxy,
   ) {}
 
   @Post()
   create(@Body() createOrderDto: CreateOrderDto) {
-    return this.orderClient.send('createOrder', createOrderDto);
+    return this.client.send('createOrder', createOrderDto);
   }
 
   @Get()
   async findAll(@Query() orderPaginationDto: OrderPaginationDTO) {
     try {
       const orders = await firstValueFrom(
-        this.orderClient.send('findAllOrders', orderPaginationDto),
+        this.client.send('findAllOrders', orderPaginationDto),
       );
       return orders;
     } catch (error) {
@@ -43,7 +42,7 @@ export class OrdersController {
   async findOne(@Param('id', ParseUUIDPipe) id: string) {
     try {
       const order = await firstValueFrom(
-        this.orderClient.send('findOneOrder', { id }),
+        this.client.send('findOneOrder', { id }),
       );
 
       return order;
@@ -55,7 +54,7 @@ export class OrdersController {
   @Get(':status')
   async findAllByStatus(@Param() status: StatusDTO) {
     try {
-      return this.orderClient.send('findAllOrders', {
+      return this.client.send('findAllOrders', {
         ...PaginationDto,
         status: status.status,
       });
@@ -70,7 +69,7 @@ export class OrdersController {
     @Body() statusDTO: StatusDTO,
   ) {
     try {
-      return this.orderClient.send('changeOrderStatus', {
+      return this.client.send('changeOrderStatus', {
         id,
         status: statusDTO.status,
       });

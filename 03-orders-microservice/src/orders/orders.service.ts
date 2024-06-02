@@ -12,12 +12,13 @@ import { ClientProxy, RpcException } from '@nestjs/microservices';
 import { OrderPaginationDTO } from './dto/order-pagination.dto';
 import { ChangeOrderStatusDTO } from './dto';
 import { firstValueFrom } from 'rxjs';
-import { PRODUCT_SERVICE } from 'src/config';
+import { NATS_SERVICE } from 'src/config/services';
+// import { PRODUCT_SERVICE } from 'src/config';
 
 @Injectable()
 export class OrdersService extends PrismaClient implements OnModuleInit {
   constructor(
-    @Inject(PRODUCT_SERVICE) private readonly productsClient: ClientProxy,
+    @Inject(NATS_SERVICE) private readonly client: ClientProxy,
   ) {
     super();
   }
@@ -32,11 +33,11 @@ export class OrdersService extends PrismaClient implements OnModuleInit {
   async create(createOrderDto: CreateOrderDto) {
 
     try {
-
+ 
     //Confirmar los ids de los productos
     const productIds = createOrderDto.items.map((item) => item.productId);
     const products: any[] = await firstValueFrom(
-      this.productsClient.send({ cmd: 'validate_products' }, productIds),
+      this.client.send({ cmd: 'validate_products' }, productIds),
     );
     
     //Cálculos de los valores
@@ -50,7 +51,7 @@ export class OrdersService extends PrismaClient implements OnModuleInit {
     const totalItems = createOrderDto.items.reduce((acc, orderItem) => {
       return acc + orderItem.quantity;
     }, 0);
- 
+    
       //Crear una transacción de base de datos
       const order = await this.order.create({
         data: {
@@ -78,7 +79,7 @@ export class OrdersService extends PrismaClient implements OnModuleInit {
           },
         },
       });
-
+ 
       return {
 
         ...order,
@@ -150,7 +151,7 @@ export class OrdersService extends PrismaClient implements OnModuleInit {
 
     const productIds = order.OrderItem.map( orderItem => orderItem.productId)
     const products: any[] = await firstValueFrom(
-      this.productsClient.send({ cmd: 'validate_products' }, productIds),
+      this.client.send({ cmd: 'validate_products' }, productIds),
     );
 
     return {
