@@ -1,6 +1,12 @@
 version: '3'
 
 services:
+
+  nats-server:
+    image: nats:latest
+    ports:
+      - 8222:8222
+
   client-gateway:
     build: ./02-client-gateway
     ports:
@@ -10,5 +16,15 @@ services:
     command: npm run start:dev
     environment:
       - PORT=3000
-      - NATS_SERVERS=nats://localhost:4222
+      - NATS_SERVERS=nats://nats-server:4222
     
+  products-ms:
+    build: ./01-products-microservice
+    volumes:
+      - ./01-products-microservice/src:/usr/src/app/src
+    command: npm run start:dev
+    environment:
+      - PORT=3001
+      - NATS_SERVERS=nats://nats-server:4222
+      - DATABASE_URL=file:./dev.db
+
