@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  client-gateway:
+    build: ./02-client-gateway
+    ports:
+      - 3000:3000
+    volumes:
+      - ./02-client-gateway/src:/usr/src/app/src
+    command: npm run start:dev
+    environment:
+      - PORT=3000
+      - NATS_SERVERS=nats://localhost:4222
+    
