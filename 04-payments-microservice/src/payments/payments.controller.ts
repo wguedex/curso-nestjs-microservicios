@@ -8,7 +8,7 @@ export class PaymentsController {
 
   @Post('create-payment-session')
   createPaymentSession(){
-    return 'createPaymentSession';
+    return this.paymentsService.createPaymentSession();
   }
 
   @Get('success')
@@ -19,7 +19,7 @@ export class PaymentsController {
     }
   }
 
-  @Get('cancelled')
+  @Get('cancel')
   cancel(){
     return {
       ok:false, 
