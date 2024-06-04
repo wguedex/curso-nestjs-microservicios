@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { envs } from 'src/config';
 import Stripe from 'stripe';
+import { PaymentSessionDTO } from './dto/payment-session.dto';
 
 @Injectable()
 export class PaymentsService {
@@ -8,7 +9,24 @@ export class PaymentsService {
     private readonly stripe = new Stripe(envs.stripeSecret)
 
 
-    async createPaymentSession(){
+    async createPaymentSession(paymentSessionDTO: PaymentSessionDTO){
+
+        const {currency, items} = paymentSessionDTO;
+
+        const line_items = items.map( item => {
+            return {
+                price_data:{ 
+                    currency: currency, 
+                    product_data:{
+                        name: item.name
+                    }, 
+                    unit_amount: Math.round(item.price * 100), //Math para quitar decimales
+                }, 
+                quantity: item.quantity
+            }
+        });
+ 
+
         const session = await this.stripe.checkout.sessions.create({
             
             // #Colocar aquì el ID de la orden
@@ -17,18 +35,7 @@ export class PaymentsService {
             }, 
 
             // #Colocar los items que las personas estàn comprando
-            line_items:[
-            {
-                price_data:{
-                    currency:'usd', 
-                    product_data:{
-                        name:'T-Shirt'
-                    }, 
-                    unit_amount: 2000, //2000 / 100 equivale a 20.00 dolares 
-                }, 
-                quantity: 2
-            }
-            ], 
+            line_items: line_items, 
 
             //# modalidad
             mode: 'payment', 
