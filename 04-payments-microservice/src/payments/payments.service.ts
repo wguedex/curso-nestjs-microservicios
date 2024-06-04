@@ -9,7 +9,8 @@ export class PaymentsService {
   private readonly stripe = new Stripe(envs.stripeSecret);
 
   async createPaymentSession(paymentSessionDTO: PaymentSessionDTO) {
-    const { currency, items } = paymentSessionDTO;
+
+    const { currency, items, orderId } = paymentSessionDTO;
 
     const line_items = items.map((item) => {
       return {
@@ -27,7 +28,9 @@ export class PaymentsService {
     const session = await this.stripe.checkout.sessions.create({
       // #Colocar aquì el ID de la orden
       payment_intent_data: {
-        metadata: {},
+        metadata: {
+          orderId: orderId
+        },
       },
 
       // #Colocar los items que las personas estàn comprando
@@ -61,8 +64,12 @@ export class PaymentsService {
 
     switch(event.type) {
       case 'charge.succeeded':
+        const chargeSucceeded = event.data.object;
         //TODO: llamar nuestro microservicio
-        console.log(event)
+        console.log({
+          metadata:chargeSucceeded.metadata, 
+          orderId:chargeSucceeded.metadata.orderId,  
+        })
         break;
       default:
         console.log(`Event ${event.type} not handled`)

@@ -6,6 +6,9 @@ import { ArrayMinSize, IsArray, IsNumber, IsPositive, IsString, ValidateNested, 
 export class PaymentSessionDTO {
 
     @IsString()
+    orderId: string;
+
+    @IsString()
     currency: string;
 
     @IsArray()
