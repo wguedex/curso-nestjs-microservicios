@@ -35,8 +35,8 @@ export class PaymentsService {
 
       //# modalidad
       mode: 'payment',
-      success_url: 'http://localhost:3000/payments/success',
-      cancel_url: 'http://localhost:3000/payments/cancel',
+      success_url: 'http://localhost:3003/payments/success',
+      cancel_url: 'http://localhost:3003/payments/cancel',
     });
 
     return session;
@@ -58,6 +58,16 @@ export class PaymentsService {
     }
 
     console.log({event})
+
+    switch(event.type) {
+      case 'charge.succeeded':
+        //TODO: llamar nuestro microservicio
+        console.log(event)
+        break;
+      default:
+        console.log(`Event ${event.type} not handled`)
+
+    }
 
     return res.status(200).json({ sig });
 
